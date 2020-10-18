@@ -1,0 +1,37 @@
+{
+    "name": "redux-micro-frontend",
+    "version": "0.0.0",
+    "license": "MIT",
+    "description": "Light-weight FXP library for managing state using Redux",
+    "scripts": {
+        "build": "tsc",
+        "test": "karma start karma.conf.js",
+        "release:pre": "npm run build && npm version prerelease && npm run copyfiles:publish",
+        "release:patch": "npm run build && npm version patch && npm run copyfiles:publish",
+        "release:minor": "npm run build && npm version minor && npm run copyfiles:publish",
+        "release:major": "npm run build && npm version major && npm run copyfiles:publish",
+        "copyfiles:publish": "npm run copy:packagejson && npm run copy:npmrc && cd lib && npm publish",
+        "copy:packagejson": "cpr package.json lib/package.json -o",
+        "copy:npmrc": "cpr .npmrc lib/.npmrc -o",
+        "clean": "rimraf node_modules",
+        "rebuild": "npm run clean && npm i && npm build"
+    },
+    "private": false,
+    "dependencies": {
+        "flatted": "^2.0.2",
+        "redux": "^4.0.5"
+    },
+    "devDependencies": {
+        "@types/jasmine": "^3.5.14",
+        "cpr": "^3.0.1",
+        "jasmine": "^3.6.2",
+        "karma": "^4.4.1",
+        "karma-chrome-launcher": "^3.1.0",
+        "karma-coverage": "^2.0.3",
+        "karma-jasmine": "^3.3.1",
+        "karma-typescript": "^4.1.1",
+        "karma-typescript-es6-transform": "^4.1.1",
+        "rimraf": "^3.0.2",
+        "typescript": "^3.5.3"
+    }
+}

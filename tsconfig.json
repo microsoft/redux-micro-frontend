@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "module": "ES6",
+        "sourceMap": true,
+        "target": "es5",
+        "allowJs": false,
+        "outDir": "lib",
+        "declaration": true,
+        "moduleResolution": "node",
+        "skipLibCheck": true,
+        "lib": ["es2017", "DOM"],
+        "downlevelIteration": true
+    },
+    "typeRoots": [
+        "node_modules/@types"
+    ],
+    "files": [
+        "index.ts"
+    ],
+    "exclude": [
+        "node_modules/**/*",
+        "**/*.spec.ts"
+    ]
+}
