@@ -18,7 +18,7 @@ Each Micro Frontend would have the capability to have its own `Redux Store`. Eac
 
 ### Global Actions
 A concept of `Global Action` is available which allows other apps to dispatch actions to stores registered by other micro frontends. Each micro frontend has the capability to register a set of global actions along with the store. These set of global actions can be dispatched in this micro frontend's store by other micro frontends. This enables cross-application communication.
-![Global Store](./assets/Global_Store_Dispatch.png')
+![Global Store](https://github.com/microsoft/redux-micro-frontend/blob/main/assets/Global_Store_Dispatch.png)
 
 ### Cross-state callbacks
 Cross-application communication can also be achieved by subscribing to change notifications in other Micro Frontend's state. Since each micro-frontend has read-only permission to other states, they can also attach callbacks for listening to state changes. The callbacks can be attached either at an individual store level or at a global level (this would mean that state change in any store would invoke the callback).
