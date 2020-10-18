@@ -2,7 +2,22 @@
     "name": "redux-micro-frontend",
     "version": "0.0.0",
     "license": "MIT",
-    "description": "Light-weight FXP library for managing state using Redux",
+    "description": "This is a library for using Redux to managing state for self-contained apps in a Micro-Frontend architecture. Each self-contained isolated app can have its own isolated and decoupled Redux store. The componentized stores interact with a global store for enabling cross-application communication.",
+    "author": {
+        "name": "Pratik Bhattacharya",
+        "email": "pratikb@microsoft.com",
+        "url": "https://www.devcompost.com/"
+    },
+    "homepage": "https://github.com/microsoft/redux-micro-frontend",
+    "keywords": ["redux", "micro frontend", "microfrontend", "microfrontends", "micro frontends", "state", "statemanagement"],
+    "bugs": {
+        "url": "https://github.com/microsoft/redux-micro-frontend/issues",
+        "email": "pratikb@microsoft.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/microsoft/redux-micro-frontend"
+    },
     "scripts": {
         "build": "tsc",
         "test": "karma start karma.conf.js",
