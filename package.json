@@ -1,6 +1,6 @@
 {
     "name": "redux-micro-frontend",
-    "version": "0.0.0",
+    "version": "1.0.0-beta-0.0",
     "license": "MIT",
     "description": "This is a library for using Redux to managing state for self-contained apps in a Micro-Frontend architecture. Each self-contained isolated app can have its own isolated and decoupled Redux store. The componentized stores interact with a global store for enabling cross-application communication.",
     "author": {
@@ -21,11 +21,12 @@
     "scripts": {
         "build": "tsc",
         "test": "karma start karma.conf.js",
-        "release:pre": "npm run build && npm version prerelease && npm run copyfiles:publish",
+        "release:pre": "npm run build && npm version prerelease && npm run copyfiles:publish-beta",
         "release:patch": "npm run build && npm version patch && npm run copyfiles:publish",
         "release:minor": "npm run build && npm version minor && npm run copyfiles:publish",
         "release:major": "npm run build && npm version major && npm run copyfiles:publish",
         "copyfiles:publish": "npm run copy:packagejson && npm run copy:npmrc && cd lib && npm publish",
+        "copyfiles:publish-beta": "npm run copy:packagejson && npm run copy:npmrc && cd lib && npm publish --tag beta",
         "copy:packagejson": "cpr package.json lib/package.json -o",
         "copy:npmrc": "cpr .npmrc lib/.npmrc -o",
         "clean": "rimraf node_modules",
