@@ -29,6 +29,72 @@ Cross-application communication can also be achieved by subscribing to change no
 - Apps would have to be aware of other Micro Frontends
 - Shared middlewares. Since only a single store is maintained, all the Micro Frontends would have to share the same middlewares. So in situations where one app wants to use `redux-saga` and other wants to use `redux-thunk` is not possible.
 
+## Installation
+```sh
+npm install redux-micro-frontend --save
+```
+
+## Quick Guide
+### Get an instance of Global Store
+```javascript
+import { GlobalStore } from 'redux-micro-frontend';
+...
+this.globalStore = GlobalStore.Get();
+```
+
+### Create/Register Store
+```javascript
+ler appStore = createStore(AppReducer); // Redux Store
+this.globalStore.RegisterStore("App1", appStore);
+this.globalStore.RegisterGlobalActions("App1", ["Action-1", "Action-2"]); // These actions can be dispatched by other apps to this store
+```
+
+### Dispatch Action
+```javascript
+let action = {
+    type: 'Action-1',
+    payload: 'Some data'
+}
+this.globalStore.DispatchAction("App1", action); // This will dispatch the action to current app's store as well other stores who might have registered 'Action-1' as a global action
+```
+
+### Subscribe to State
+```javascript
+// State change in any of the apps
+this.globalStore.Subscribe("App1", localStateChanged);
+
+// State change in the current app
+this.globalStore.SubscribeToGlobalState("App1", globalStateChanged);
+
+// State change in app2's state
+this.globalStore.SubscribeToPartnerState("App1", "App2", app2StateChanged);
+
+...
+
+localStateChanged(localState) {
+    // Do something with the new state
+}
+
+globalStateChanged(stateChanged) {
+        // The global state has a separate attribute for all the apps registered in the store
+        let app1State = globalState.App1;
+        let app2State = globalState.App2; 
+}
+
+app2StateChanged(app2State) {
+    // Do something with the new state of app 2
+}
+
+```
+
+## Sample App
+Location: https://github.com/microsoft/redux-micro-frontend/tree/main/sample
+
+Instruction for running Sample App
+1. Go to sample/counterApp and run `npm i` and then `npm run start start-component`
+2. Go to sample/todoAoo and run `npm i` and then `npm run start start-component`
+3. Go to sample/shell and run `npm i` and then `npm run start`
+
 ## Appendix
 - To learn the basics for Redux check for [official documentation of Redux](https://redux.js.org/) - https://redux.js.org/.
 - To know more about [Micro Front-end](https://martinfowler.com/articles/micro-frontends.html) style of architecture check [this article](https://martinfowler.com/articles/micro-frontends.html) from [martinfowler.com](https://martinfowler.com/articles/micro-frontends.html).

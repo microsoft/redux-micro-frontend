@@ -59,7 +59,9 @@ export class GlobalStore implements IGlobalStore {
     CreateStore(appName: string, appReducer: Reducer, middlewares?: Array<Middleware>, globalActions?: Array<string>, shouldReplaceStore: boolean = false, shouldReplaceReducer: boolean = false): Store<any, any> {
         let existingStore = this._stores[appName];
         if (existingStore === null || existingStore === undefined || shouldReplaceStore) {
-            let appStore = createStore(appReducer, applyMiddleware(...middlewares, ...this.GetGlobalMiddlewares()));
+            if (middlewares === undefined || middlewares === null)
+                middlewares = [];
+            let appStore = createStore(appReducer, applyMiddleware(...middlewares));
             this.RegisterStore(appName, appStore, globalActions, shouldReplaceStore);
             appStore.subscribe(this.InvokeGlobalListeners.bind(this));
             return appStore;
@@ -175,20 +177,65 @@ export class GlobalStore implements IGlobalStore {
      * 
      * @access public
      * 
-     * @param {string} source Name of app dispatching the Actions.
-     * @param {IAction<any>} action Action to be dispatched.
+     * @param {string} source Name of app dispatching the Actions
+     * @param {IAction<any>} action Action to be dispatched
      */
     DispatchGlobalAction(source: string, action: IAction<any>): void {
         for (let partner in this._stores) {
-            let registeredActionsByPartner = this._globalActions[partner];
-            if (registeredActionsByPartner === undefined || registeredActionsByPartner === null) {
-                continue;
-            }
-            let isActionRegisteredByPartner = registeredActionsByPartner.some(registeredAction => registeredAction === action.type || registeredAction === GlobalStore.AllowAll);
+            let isActionRegisteredByPartner = this.IsActionRegisteredAsGlobal(partner, action);
             if (isActionRegisteredByPartner) {
                 this._stores[partner].dispatch(action);
             }
         }
+    }
+
+    /**
+     * Summary: Dispatched an action of the local store
+     * 
+     * @access public
+     * 
+     * @param {string} source Name of app dispatching the Actions
+     * @param {IAction<any>} action Action to be dispatched
+     */
+    DispatchLocalAction(source: string, action: IAction<any>): void {
+        let localStore = this._stores[source];
+        if (localStore === undefined || localStore === null) {
+            let error = new Error(`Store is not registered`);
+            if (this._logger !== undefined && this._logger !== null)
+                this._logger.LogException(source, error, {});
+            throw error;
+        }
+        localStore.dispatch(action);
+    }
+
+    /**
+     * Summary: Dispatches an action at a local as well global level
+     * 
+     * @access public
+     * 
+     * @param {string} source Name of app dispatching the Actions
+     * @param {IAction<any>} action Action to be dispatched
+     */
+    DispatchAction(source: string, action: IAction<any>): void {
+        this.DispatchGlobalAction(source, action);
+
+        let isActionGlobal = this.IsActionRegisteredAsGlobal(source, action);
+        if (!isActionGlobal)
+            this.DispatchLocalAction(source, action);
+    }
+
+    /**
+     * Summary: Subscribe to current store's state changes
+     * 
+     * @param {string} source Name of the application
+     * @param {(state: any) => void} callback Callback method to be invoked when state changes
+     */
+    Subscribe(source: string, callback: (state: any) => void): () => void {
+        let store = this.GetPartnerStore(source);
+        if (store === undefined || store === null) {
+            throw new Error(`ERROR: Store for ${source} hasn't been registered`);
+        }
+        return store.subscribe(() => callback(store.getState()));
     }
 
     /**
@@ -223,7 +270,6 @@ export class GlobalStore implements IGlobalStore {
         if (partnerStore === undefined || partnerStore === null) {
             throw new Error(`ERROR: ${source} is trying to subscribe to partner ${partner}. Either ${partner} doesn't exist or hasn't been loaded yet`);
         }
-        let partnerState = partnerStore.getState();
         return partnerStore.subscribe(() => callback(partnerStore.getState()));
     }
 
@@ -263,13 +309,21 @@ export class GlobalStore implements IGlobalStore {
         return this.GetPartnerStore(GlobalStore.Platform);
     }
 
-    public GetPartnerStore(partnerName: string): Store<any, any> {
+    private GetPartnerStore(partnerName: string): Store<any, any> {
         return this._stores[partnerName];
     }
 
     private GetGlobalMiddlewares(): Array<Middleware> {
         let actionLoggerMiddleware = this._actionLogger.CreateMiddleware();
         return [actionLoggerMiddleware];
+    }
+
+    private IsActionRegisteredAsGlobal(appName: string, action: IAction<any>): boolean {
+        let registeredGlobalActions = this._globalActions[appName];
+            if (registeredGlobalActions === undefined || registeredGlobalActions === null) {
+                return false;
+            }
+        return registeredGlobalActions.some(registeredAction => registeredAction === action.type || registeredAction === GlobalStore.AllowAll);
     }
 
     private LogRegistration(appName: string, isReplaced: boolean) {

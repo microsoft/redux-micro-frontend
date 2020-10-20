@@ -1,0 +1,55 @@
+{
+    "name": "redux-micro-frontend-sample-counter",
+    "version": "0.0.0",
+    "license": "MIT",
+    "description": "This is a sample app with counter",
+    "author": {
+        "name": "Pratik Bhattacharya",
+        "email": "pratikb@microsoft.com",
+        "url": "https://www.devcompost.com/"
+    },
+    "homepage": "https://github.com/microsoft/redux-micro-frontend",
+    "keywords": [
+        "redux",
+        "micro frontend",
+        "microfrontend",
+        "microfrontends",
+        "micro frontends",
+        "state",
+        "statemanagement"
+    ],
+    "bugs": {
+        "url": "https://github.com/microsoft/redux-micro-frontend/issues",
+        "email": "pratikb@microsoft.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/microsoft/redux-micro-frontend"
+    },
+    "scripts": {
+        "build": "webpack",
+        "start": "webpack serve",
+        "start-component": "webpack serve --config ./webpack.config.mf.js"
+    },
+    "private": false,
+    "dependencies": {
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.12.1",
+        "@babel/core": "^7.12.3",
+        "@babel/preset-env": "^7.12.1",
+        "@babel/preset-react": "^7.12.1",
+        "babel-eslint": "^10.1.0",
+        "babel-loader": "^8.1.0",
+        "clean-webpack-plugin": "^3.0.0",
+        "css-loader": "^5.0.0",
+        "html-webpack-plugin": "^4.5.0",
+        "style-loader": "^2.0.0",
+        "webpack": "^5.1.3",
+        "webpack-cli": "^4.1.0",
+        "webpack-dev-server": "^3.11.0",
+        "react": "^16.14.0",
+        "react-dom": "^16.14.0",
+        "redux-micro-frontend": "file:../../lib"
+    }
+}
