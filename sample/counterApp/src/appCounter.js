@@ -56,9 +56,9 @@ export class AppCounter extends React.Component {
             <div>
                 <Counter count={this.state.global} header="Global Counter" increment={this.incrementGlobalCounter} decrement={this.decrementGlobalCounter}></Counter>
                 <Counter count={this.state.local} header="Local Counter" increment={this.incrementLocalCounter} decrement={this.decrementLocalCounter}></Counter>
-                <h1>
+                <h2>
                     Todo Counter
-                </h1>
+                </h2>
                 <span>{this.state.todo}</span>
             </div>
         )

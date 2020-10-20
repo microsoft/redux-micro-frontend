@@ -92,8 +92,12 @@ Location: https://github.com/microsoft/redux-micro-frontend/tree/main/sample
 
 Instruction for running Sample App
 1. Go to sample/counterApp and run `npm i` and then `npm run start start-component`
-2. Go to sample/todoAoo and run `npm i` and then `npm run start start-component`
+2. Go to sample/todoApp and run `npm i` and then `npm run start start-component`
 3. Go to sample/shell and run `npm i` and then `npm run start`
+4. Browse http://localhost:6001
+
+## Documentation
+[See Github wiki](https://github.com/microsoft/redux-micro-frontend/wiki)
 
 ## Appendix
 - To learn the basics for Redux check for [official documentation of Redux](https://redux.js.org/) - https://redux.js.org/.

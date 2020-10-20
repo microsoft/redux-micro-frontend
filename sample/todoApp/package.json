@@ -32,8 +32,7 @@
         "start-component": "webpack serve --config ./webpack.config.mf.js"
     },
     "private": false,
-    "dependencies": {
-    },
+    "dependencies": {},
     "devDependencies": {
         "@babel/cli": "^7.12.1",
         "@babel/core": "^7.12.3",
@@ -50,6 +49,6 @@
         "webpack-dev-server": "^3.11.0",
         "react": "^16.14.0",
         "react-dom": "^16.14.0",
-        "redux-micro-frontend": "file:../../lib"
+        "redux-micro-frontend": "1.0.0"
     }
 }

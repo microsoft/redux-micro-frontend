@@ -15,6 +15,7 @@ export class AddTodo extends React.Component {
     render() {
         return (
             <div>
+                <label>Add Todo Object</label>
                 <input type='Text' placeholder="Enter Todo" ref={node => {
                     this.description = node;
                 }}></input>
