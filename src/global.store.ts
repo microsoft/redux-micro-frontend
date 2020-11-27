@@ -4,6 +4,7 @@ import { ActionLogger } from './middlewares/action.logger';
 import { AbstractLogger as ILogger } from './common/abstract.logger';
 import { IGlobalStore } from './common/interfaces/global.store.interface';
 import { Store, Reducer, Middleware, createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 /**
  * Summary Global store for all Apps and container shell (Platform) in Micro-Frontend application.
@@ -13,6 +14,7 @@ export class GlobalStore implements IGlobalStore {
     public static readonly Platform: string = "Platform";
     public static readonly AllowAll: string = "*";
     public static readonly InstanceName: string = "GlobalStoreInstance";
+    public static DebugMode: boolean = false;
 
     private _stores: { [key: string]: Store };
     private _globalActions: { [key: string]: Array<string> };
@@ -32,6 +34,9 @@ export class GlobalStore implements IGlobalStore {
      * @param {ILogger} logger Logger service.
      */
     public static Get(debugMode: boolean = false, logger: ILogger = null): IGlobalStore {
+        if(debugMode) {
+            this.DebugMode = debugMode;
+        }
         if (debugMode && (logger === undefined || logger === null)) {
             logger = new ConsoleLogger(debugMode);
         }
@@ -61,7 +66,7 @@ export class GlobalStore implements IGlobalStore {
         if (existingStore === null || existingStore === undefined || shouldReplaceStore) {
             if (middlewares === undefined || middlewares === null)
                 middlewares = [];
-            let appStore = createStore(appReducer, applyMiddleware(...middlewares));
+            let appStore = createStore(appReducer, GlobalStore.DebugMode ? composeWithDevTools( applyMiddleware(...middlewares)) : applyMiddleware(...middlewares));
             this.RegisterStore(appName, appStore, globalActions, shouldReplaceStore);
             appStore.subscribe(this.InvokeGlobalListeners.bind(this));
             return appStore;
