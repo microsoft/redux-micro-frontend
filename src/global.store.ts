@@ -4,6 +4,7 @@ import { ActionLogger } from './middlewares/action.logger';
 import { AbstractLogger as ILogger } from './common/abstract.logger';
 import { IGlobalStore } from './common/interfaces/global.store.interface';
 import { Store, Reducer, Middleware, createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 /**
  * Summary Global store for all Apps and container shell (Platform) in Micro-Frontend application.
@@ -53,15 +54,24 @@ export class GlobalStore implements IGlobalStore {
      * @param {Array<Middleware>} middlewares List of redux middlewares that the partner app needs.
      * @param {boolean} shouldReplaceStore Flag to indicate if the Partner App wants to replace an already created/registered store with the new store.
      * @param {boolean} shouldReplaceReducer Flag to indicate if the Partner App wants to replace the existing root Reducer with the given reducer. Note, that the previous root Reducer will be replaced and not updated. If the existing Reducer needs to be used, then partner app must do the append the new reducer and pass the combined root reducer.
+     * @param {boolean} debugMode switch to enable/disable the redux-devtools extension.
      * 
      * @returns {Store<any, any>} The new Store
      */
-    CreateStore(appName: string, appReducer: Reducer, middlewares?: Array<Middleware>, globalActions?: Array<string>, shouldReplaceStore: boolean = false, shouldReplaceReducer: boolean = false): Store<any, any> {
+    CreateStore(appName: string, appReducer: Reducer, middlewares?: Array<Middleware>, globalActions?: Array<string>, shouldReplaceStore: boolean = false, shouldReplaceReducer: boolean = false, debugMode: boolean = false): Store<any, any> {
         let existingStore = this._stores[appName];
         if (existingStore === null || existingStore === undefined || shouldReplaceStore) {
             if (middlewares === undefined || middlewares === null)
                 middlewares = [];
-            let appStore = createStore(appReducer, applyMiddleware(...middlewares));
+            let appStore;
+            if(debugMode) {
+                appStore = createStore(appReducer, composeWithDevTools(
+                    applyMiddleware(...middlewares)
+                ));
+            } else {
+                appStore = createStore(appReducer, applyMiddleware(...middlewares));
+            }
+
             this.RegisterStore(appName, appStore, globalActions, shouldReplaceStore);
             appStore.subscribe(this.InvokeGlobalListeners.bind(this));
             return appStore;
