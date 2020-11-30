@@ -14,6 +14,7 @@ export class GlobalStore implements IGlobalStore {
     public static readonly Platform: string = "Platform";
     public static readonly AllowAll: string = "*";
     public static readonly InstanceName: string = "GlobalStoreInstance";
+    public static DebugMode: boolean = false;
 
     private _stores: { [key: string]: Store };
     private _globalActions: { [key: string]: Array<string> };
@@ -33,6 +34,9 @@ export class GlobalStore implements IGlobalStore {
      * @param {ILogger} logger Logger service.
      */
     public static Get(debugMode: boolean = false, logger: ILogger = null): IGlobalStore {
+        if(debugMode) {
+            this.DebugMode = debugMode;
+        }
         if (debugMode && (logger === undefined || logger === null)) {
             logger = new ConsoleLogger(debugMode);
         }
@@ -58,13 +62,13 @@ export class GlobalStore implements IGlobalStore {
      * 
      * @returns {Store<any, any>} The new Store
      */
-    CreateStore(appName: string, appReducer: Reducer, middlewares?: Array<Middleware>, globalActions?: Array<string>, shouldReplaceStore: boolean = false, shouldReplaceReducer: boolean = false, debugMode: boolean = false): Store<any, any> {
+    CreateStore(appName: string, appReducer: Reducer, middlewares?: Array<Middleware>, globalActions?: Array<string>, shouldReplaceStore: boolean = false, shouldReplaceReducer: boolean = false): Store<any, any> {
         let existingStore = this._stores[appName];
         if (existingStore === null || existingStore === undefined || shouldReplaceStore) {
             if (middlewares === undefined || middlewares === null)
                 middlewares = [];
             let appStore;
-            if(debugMode) {
+            if(GlobalStore.DebugMode) {
                 appStore = createStore(appReducer, composeWithDevTools(
                     applyMiddleware(...middlewares)
                 ));
