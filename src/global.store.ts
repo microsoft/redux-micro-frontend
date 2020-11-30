@@ -67,15 +67,7 @@ export class GlobalStore implements IGlobalStore {
         if (existingStore === null || existingStore === undefined || shouldReplaceStore) {
             if (middlewares === undefined || middlewares === null)
                 middlewares = [];
-            let appStore;
-            if(GlobalStore.DebugMode) {
-                appStore = createStore(appReducer, composeWithDevTools(
-                    applyMiddleware(...middlewares)
-                ));
-            } else {
-                appStore = createStore(appReducer, applyMiddleware(...middlewares));
-            }
-
+            let appStore = createStore(appReducer, GlobalStore.DebugMode ? composeWithDevTools( applyMiddleware(...middlewares)) : applyMiddleware(...middlewares));
             this.RegisterStore(appName, appStore, globalActions, shouldReplaceStore);
             appStore.subscribe(this.InvokeGlobalListeners.bind(this));
             return appStore;
