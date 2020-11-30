@@ -58,7 +58,6 @@ export class GlobalStore implements IGlobalStore {
      * @param {Array<Middleware>} middlewares List of redux middlewares that the partner app needs.
      * @param {boolean} shouldReplaceStore Flag to indicate if the Partner App wants to replace an already created/registered store with the new store.
      * @param {boolean} shouldReplaceReducer Flag to indicate if the Partner App wants to replace the existing root Reducer with the given reducer. Note, that the previous root Reducer will be replaced and not updated. If the existing Reducer needs to be used, then partner app must do the append the new reducer and pass the combined root reducer.
-     * @param {boolean} debugMode switch to enable/disable the redux-devtools extension.
      * 
      * @returns {Store<any, any>} The new Store
      */
