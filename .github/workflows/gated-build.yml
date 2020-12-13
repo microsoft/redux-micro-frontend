@@ -1,0 +1,22 @@
+# This is a gated build to verify the validity of the code
+
+name: Gated-Build
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm run test
+        
+          
