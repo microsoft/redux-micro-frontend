@@ -9,7 +9,15 @@
         "url": "https://www.devcompost.com/"
     },
     "homepage": "https://github.com/microsoft/redux-micro-frontend",
-    "keywords": ["redux", "micro frontend", "microfrontend", "microfrontends", "micro frontends", "state", "statemanagement"],
+    "keywords": [
+        "redux",
+        "micro frontend",
+        "microfrontend",
+        "microfrontends",
+        "micro frontends",
+        "state",
+        "statemanagement"
+    ],
     "bugs": {
         "url": "https://github.com/microsoft/redux-micro-frontend/issues",
         "email": "pratikb@microsoft.com"
@@ -20,7 +28,8 @@
     },
     "scripts": {
         "build": "tsc",
-        "test": "karma start karma.conf.js",
+        "test-chrome": "karma start karma.conf.js",
+        "test": "karma start karma.conf.headless.js",
         "release:pre": "npm run build && npm version prerelease && npm run copyfiles:publish-beta",
         "release:patch": "npm run build && npm version patch && npm run copyfiles:publish",
         "release:minor": "npm run build && npm version minor && npm run copyfiles:publish",
@@ -48,6 +57,7 @@
         "karma-jasmine": "^3.3.1",
         "karma-typescript": "^4.1.1",
         "karma-typescript-es6-transform": "^4.1.1",
+        "puppeteer": "^5.5.0",
         "rimraf": "^3.0.2",
         "typescript": "^3.5.3"
     }
