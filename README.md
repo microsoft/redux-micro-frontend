@@ -91,8 +91,8 @@ app2StateChanged(app2State) {
 Location: https://github.com/microsoft/redux-micro-frontend/tree/main/sample
 
 Instruction for running Sample App
-1. Go to sample/counterApp and run `npm i` and then `npm run start start-component`
-2. Go to sample/todoApp and run `npm i` and then `npm run start start-component`
+1. Go to sample/counterApp and run `npm i` and then `npm run start`
+2. Go to sample/todoApp and run `npm i` and then `npm run start`
 3. Go to sample/shell and run `npm i` and then `npm run start`
 4. Browse http://localhost:6001
 
