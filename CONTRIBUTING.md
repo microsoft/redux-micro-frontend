@@ -9,6 +9,9 @@ When you submit a pull request, a CLA-bot will automatically determine whether y
 to provide a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the
 instructions provided by the bot. You will only need to do this once across all repositories using our CLA.
 
+If you are adding new features please add unit test cases. For the modification of any existing feature
+ensure all existing test cases are running.
+
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/)
 or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
