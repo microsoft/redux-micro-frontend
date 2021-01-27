@@ -67,7 +67,7 @@ export abstract class AbstractLogger {
             if (tmpLogger.LoggerIdentity === this.LoggerIdentity)
                 return true;
             tmpLogger = tmpLogger.NextLogger;
-        } while (tmpLogger !== null || tmpLogger !== undefined)
+        } while (tmpLogger !== null && tmpLogger !== undefined)
         return false;
     }
 
