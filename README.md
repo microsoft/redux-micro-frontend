@@ -15,6 +15,9 @@ In a Micro-Frontend architecture, an individual application should not be able t
 A concept of `Global Store` is introduced which is a virtual amalgamation of multiple `Redux Stores`. Strictly speaking, the `Global Store` is not an actual store, rather it's a collection of multiple isolated `Redux Stores`. Each physical `Redux Store` here refers to the isolated store that each app uses. Micro frontends having access to the `Global Store` would be able to perform all operations that are allowed on an individual `Redux Store` including `getState()`, `dispatch()` and `subscribe()`.
 
 Each Micro Frontend would have the capability to have its own `Redux Store`. Each app would create and register their `Redux Store` with the `Global Store`. The `Global Store` then uses these individual stores to project a Global State which is a combination of the state from all the other Stores. All the Micro Frontends would have access to the Global Store and would be able to see the state from the other Micro Frontends but won't be able to modify them. Actions dispatched by an app remains confined within the store registered by the app and is not dispatched to the other stores, thereby providing componentization and isolation.
+### Read more
+[State Management Basics](https://www.devcompost.com/post/state-management-for-front-end-applications-part-i-what-and-why)
+
 
 ### Global Actions
 A concept of `Global Action` is available which allows other apps to dispatch actions to stores registered by other micro frontends. Each micro frontend has the capability to register a set of global actions along with the store. These set of global actions can be dispatched in this micro frontend's store by other micro frontends. This enables cross-application communication.
