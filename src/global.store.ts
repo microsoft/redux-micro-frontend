@@ -338,7 +338,7 @@ export class GlobalStore implements IGlobalStore {
                 "IsReplaced": isReplaced.toString()
             };
             if (this._logger)
-                this._logger.LogEvent("Store.GlobalStore", "Store Registered", properties);
+                this._logger.LogEvent("Store.GlobalStore", "StoreRegistered", properties);
         }
         catch (error) {
             // Gulp the error
