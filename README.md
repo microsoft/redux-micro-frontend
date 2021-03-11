@@ -47,7 +47,7 @@ this.globalStore = GlobalStore.Get();
 
 ### Create/Register Store
 ```javascript
-ler appStore = createStore(AppReducer); // Redux Store
+let appStore = createStore(AppReducer); // Redux Store
 this.globalStore.RegisterStore("App1", appStore);
 this.globalStore.RegisterGlobalActions("App1", ["Action-1", "Action-2"]); // These actions can be dispatched by other apps to this store
 ```
