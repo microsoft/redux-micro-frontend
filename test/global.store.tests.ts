@@ -1,4 +1,4 @@
-import { Reducer } from 'redux';
+import { createStore, Reducer } from 'redux';
 import { GlobalStore } from '../src/global.store';
 import { IAction } from '../src/actions/action.interface';
 import { AbstractLogger as ILogger } from '../src/common/abstract.logger';
@@ -350,6 +350,49 @@ describe("Global Store", () => {
 
             // Assert
             expect(isGlobalStateChanged).toBeTruthy();
+        });
+
+        it("Should invoke callback when global state changes due to partner change - CreateStore", () => {
+            // Arrange
+            let partnerAppName = "SamplePartner-40";
+            let isGlobalStateChanged = false;
+            let store = globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
+
+            // Act
+            globalStore.SubscribeToGlobalState("Test", (state) => {
+                isGlobalStateChanged = true;
+            });
+            store.dispatch(
+                {
+                    type: "Global",
+                    payload: null
+                });
+
+
+            // Assert
+            expect(isGlobalStateChanged).toBe(true);
+        });
+
+        it("Should invoke callback when global state changes due to partner change - ResigerStore", () => {
+            // Arrange
+            let partnerAppName = "SamplePartner-41";
+            let isGlobalStateChanged = false;
+            let store = createStore(dummyPartnerReducer);
+            globalStore.RegisterStore(partnerAppName, store, ["Global"], false);
+
+            // Act
+            globalStore.SubscribeToGlobalState("Test", (state) => {
+                isGlobalStateChanged = true;
+            });
+            store.dispatch(
+                {
+                    type: "Global",
+                    payload: null
+                });
+
+
+            // Assert
+            expect(isGlobalStateChanged).toBe(true);
         });
     });
 });
