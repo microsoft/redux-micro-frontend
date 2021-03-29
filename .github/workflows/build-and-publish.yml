@@ -15,7 +15,7 @@ jobs:
       - name: Test
         run: npm run test
       - name: Copy Files
-        run: npm copyfiles
+        run: npm run copyfiles
       - name: Change Directory to lib
         run: cd lib
       - name: Publish
