@@ -68,7 +68,6 @@ export class GlobalStore implements IGlobalStore {
                 middlewares = [];
             let appStore = createStore(appReducer, GlobalStore.DebugMode ? composeWithDevTools( applyMiddleware(...middlewares)) : applyMiddleware(...middlewares));
             this.RegisterStore(appName, appStore, globalActions, shouldReplaceStore);
-            appStore.subscribe(this.InvokeGlobalListeners.bind(this));
             return appStore;
         }
 
@@ -95,6 +94,7 @@ export class GlobalStore implements IGlobalStore {
             return;
 
         this._stores[appName] = store;
+        store.subscribe(this.InvokeGlobalListeners.bind(this));
         this.RegisterGlobalActions(appName, globalActions);
         this.LogRegistration(appName, (existingStore !== undefined && existingStore !== null));
     }
@@ -338,7 +338,7 @@ export class GlobalStore implements IGlobalStore {
                 "IsReplaced": isReplaced.toString()
             };
             if (this._logger)
-                this._logger.LogEvent("Store.GlobalStore", "Store Registered", properties);
+                this._logger.LogEvent("Store.GlobalStore", "StoreRegistered", properties);
         }
         catch (error) {
             // Gulp the error
