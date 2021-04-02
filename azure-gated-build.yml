@@ -1,0 +1,28 @@
+trigger:
+- main
+
+jobs:
+  - job: BuildLibrary
+    displayName: Build Library
+    pool:
+      vmImage: ubuntu-latest    
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '12.x'
+        checkLatest: true
+    - task: Npm@1
+      inputs:
+        command: 'install'
+    - task: Npm@1
+      inputs:
+        command: 'custom'
+        customCommand: 'run build'
+    - task: Npm@1
+      inputs:
+        command: 'custom'
+        customCommand: 'run test'
+  
+
+
+
