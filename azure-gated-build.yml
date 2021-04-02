@@ -12,17 +12,61 @@ jobs:
         versionSpec: '12.x'
         checkLatest: true
     - task: Npm@1
+      displayName: Install Dependencies
       inputs:
         command: 'install'
     - task: Npm@1
+      displayName: Build Library
       inputs:
         command: 'custom'
         customCommand: 'run build'
     - task: Npm@1
+      displayName: Test
       inputs:
         command: 'custom'
         customCommand: 'run test'
-  
+  - job: BuildSample
+    displayName: Build Sample Projects
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '12.x'
+        checkLatest: true
+    - task: Npm@1
+      displayName: Install Counter App Dependencies
+      inputs:
+        command: 'install'
+        workingDir: 'sample/counterApp'
+    - task: Npm@1
+      displayName: Build Counter App
+      inputs:
+        command: 'custom'
+        customCommand: 'run build'
+        workingDir: 'sample/counterApp'
+    - task: Npm@1
+      displayName: Install Todo App Dependencies
+      inputs:
+        command: 'install'
+        workingDir: 'sample/todoApp'
+    - task: Npm@1
+      displayName: Build Todo App
+      inputs:
+        command: 'custom'
+        customCommand: 'run build'
+        workingDir: 'sample/todoApp'
+    - task: Npm@1
+      displayName: Install Shell Dependencies
+      inputs:
+        command: 'install'
+        workingDir: 'sample/shell'
+    - task: Npm@1
+      displayName: Build Shell
+      inputs:
+        command: 'custom'
+        customCommand: 'run build'
+        workingDir: 'sample/shellp'
 
 
 
