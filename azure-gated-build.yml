@@ -66,7 +66,7 @@ jobs:
       inputs:
         command: 'custom'
         customCommand: 'run build'
-        workingDir: 'sample/shellp'
+        workingDir: 'sample/shell'
 
 
 
