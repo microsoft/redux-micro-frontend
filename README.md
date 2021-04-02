@@ -1,5 +1,8 @@
 # Redux Micro-Frontend
 
+## Version Deprecation Warning
+1.1.0 - If you are using this version, please upgrade to latest immediately. This version has been deprecated due to a pipeline issue.
+
 ## Overview
 
 This library can be used for using Redux in a Micro-Frontend based architecture. Micro Frontends is an architectural pattern for breaking up a monolith Frontend application into manageable, decoupled and smaller applications. Each application is a self-contained and isolated unit. Generally, a common shell/platform application is used to host these small units to provide a common experience for the end-users.
