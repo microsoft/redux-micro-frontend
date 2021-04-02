@@ -355,3 +355,8 @@ MigrationBackup/
 
 # Code Coverage
 /coverage/**/**.*
+
+# Ignoring dist folders
+/sample/counterApp/dist/**.*
+/sample/todoApp/dist/**/**.*
+/sample/shell/dist/**/**.*
