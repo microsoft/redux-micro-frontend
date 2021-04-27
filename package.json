@@ -43,10 +43,12 @@
         "rebuild": "npm run clean && npm i && npm build"
     },
     "private": false,
-    "dependencies": {
-        "flatted": "^2.0.2",
+    "peerDependencies": {
         "redux": "^4.0.5",
         "redux-devtools-extension": "^2.13.8"
+    },
+    "dependencies":{
+        "flatted": "^2.0.2",
     },
     "devDependencies": {
         "@types/jasmine": "^3.5.14",
