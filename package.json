@@ -48,7 +48,7 @@
         "redux-devtools-extension": "^2.13.8"
     },
     "dependencies":{
-        "flatted": "^2.0.2",
+        "flatted": "^2.0.2"
     },
     "devDependencies": {
         "@types/jasmine": "^3.5.14",
