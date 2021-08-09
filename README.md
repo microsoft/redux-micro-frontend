@@ -1,6 +1,6 @@
 # Redux Micro-Frontend
 
-[한국어🇰🇷](../README.ko.md)
+[한국어🇰🇷](./README.ko.md)
 
 ## Version Deprecation Warning
 1.1.0 - If you are using this version, please upgrade to latest immediately. This version has been deprecated due to a pipeline issue.
