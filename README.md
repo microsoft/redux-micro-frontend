@@ -1,5 +1,19 @@
 # Redux Micro-Frontend
 
+[한국어🇰🇷](./README.ko.md)
+
+## Version Deprecation Warning
+1.1.0 - If you are using this version, please upgrade to latest immediately. This version has been deprecated due to a pipeline issue.
+
+## Pipeline Status
+[![Build Status](https://dev.azure.com/MicrosoftIT/OneITVSO/_apis/build/status/Compliant/Core%20Services%20Engineering%20and%20Operations/Corporate%20Functions%20Engineering/Professional%20Services/Foundational%20PS%20Services/Field%20Experience%20Platform/PS-FPSS-FExP-GitHub-Redux-Micro-Frontend?branchName=azure-pipelines)](https://dev.azure.com/MicrosoftIT/OneITVSO/_build/latest?definitionId=32881&branchName=azure-pipelines)
+
+[![CodeQL](https://github.com/microsoft/redux-micro-frontend/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/microsoft/redux-micro-frontend/actions/workflows/codeql-analysis.yml)
+
+[![Build-and-Publish](https://github.com/microsoft/redux-micro-frontend/actions/workflows/build-and-publish.yml/badge.svg?branch=main)](https://github.com/microsoft/redux-micro-frontend/actions/workflows/build-and-publish.yml)
+
+![npm](https://img.shields.io/npm/dt/redux-micro-frontend)
+
 ## Overview
 
 This library can be used for using Redux in a Micro-Frontend based architecture. Micro Frontends is an architectural pattern for breaking up a monolith Frontend application into manageable, decoupled and smaller applications. Each application is a self-contained and isolated unit. Generally, a common shell/platform application is used to host these small units to provide a common experience for the end-users.
