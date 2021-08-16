@@ -1,10 +1,10 @@
 import { IAction } from './actions/action.interface';
 import { ConsoleLogger } from './common/console.logger';
 import { ActionLogger } from './middlewares/action.logger';
+import { composeWithDevTools } from 'redux-devtools-extension';
 import { AbstractLogger as ILogger } from './common/abstract.logger';
 import { IGlobalStore } from './common/interfaces/global.store.interface';
 import { Store, Reducer, Middleware, createStore, applyMiddleware } from 'redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
 
 /**
  * Summary Global store for all Apps and container shell (Platform) in Micro-Frontend application.
@@ -19,12 +19,16 @@ export class GlobalStore implements IGlobalStore {
     private _stores: { [key: string]: Store };
     private _globalActions: { [key: string]: Array<string> };
     private _globalListeners: Array<(state: any) => void>;
+    private _eagerPartnerStoreSubscribers: { [key: string]:  (state: any) => void};
+    private _eagerUnsubscribers: { [key: string]: () => void };
     private _actionLogger: ActionLogger = null;
 
     private constructor(private _logger: ILogger = null) {
         this._stores = {};
         this._globalActions = {};
         this._globalListeners = [];
+        this._eagerPartnerStoreSubscribers = {};
+        this._eagerUnsubscribers = {};
         this._actionLogger = new ActionLogger(_logger);
     }
 
@@ -96,6 +100,10 @@ export class GlobalStore implements IGlobalStore {
         this._stores[appName] = store;
         store.subscribe(this.InvokeGlobalListeners.bind(this));
         this.RegisterGlobalActions(appName, globalActions);
+        let eagerSubscription = this._eagerPartnerStoreSubscribers[appName];
+        if (eagerSubscription !== undefined && eagerSubscription !== null){
+            this._eagerUnsubscribers[appName] = this.SubscribeToPartnerState("SYS", appName, eagerSubscription);
+        }
         this.LogRegistration(appName, (existingStore !== undefined && existingStore !== null));
     }
 
@@ -265,15 +273,23 @@ export class GlobalStore implements IGlobalStore {
      * @param {string} source Name of the application subscribing to the state changes.
      * @param {string} partner Name of the Partner application to whose store is getting subscribed to.
      * @param {(state: any) => void} callback Callback method to be called for every partner's state change.
+     * @param {boolean} eager Allows subscription to store that's yet to registered
      * 
      * @throws Error when the partner is yet to be registered/loaded or partner doesn't exist.
      * 
      * @returns {() => void} Unsubscribe method. Call this method to unsubscribe to the changes.
      */
-    SubscribeToPartnerState(source: string, partner: string, callback: (state: any) => void): () => void {
+    SubscribeToPartnerState(source: string, partner: string, callback: (state: any) => void, eager: boolean = true): () => void {
         let partnerStore = this.GetPartnerStore(partner);
         if (partnerStore === undefined || partnerStore === null) {
-            throw new Error(`ERROR: ${source} is trying to subscribe to partner ${partner}. Either ${partner} doesn't exist or hasn't been loaded yet`);
+            if (!eager){
+                throw new Error(`ERROR: ${source} is trying to subscribe to partner ${partner}. Either ${partner} doesn't exist or hasn't been loaded yet`);
+            }
+            
+            this._eagerPartnerStoreSubscribers[partner] = callback;
+            return () => {
+                this.UnsubscribeEagerSubscription(partner);
+            }
         }
         return partnerStore.subscribe(() => callback(partnerStore.getState()));
     }
@@ -329,6 +345,15 @@ export class GlobalStore implements IGlobalStore {
                 return false;
             }
         return registeredGlobalActions.some(registeredAction => registeredAction === action.type || registeredAction === GlobalStore.AllowAll);
+    }
+
+    private UnsubscribeEagerSubscription(partnerName: string) {
+        if (!partnerName)
+            return;
+
+        let unsubscriber = this._eagerUnsubscribers[partnerName];
+        if (unsubscriber)
+            unsubscriber();
     }
 
     private LogRegistration(appName: string, isReplaced: boolean) {
