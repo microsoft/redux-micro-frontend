@@ -358,6 +358,7 @@ describe("Global Store", () => {
             // Arrange
             let partnerAppName = "SamplePartner-102";
             let isPartnerStateChanged = false;
+            
             // Act
             globalStore.SubscribeToPartnerState("Test", partnerAppName, (state) => {
                 isPartnerStateChanged = true;
@@ -373,6 +374,37 @@ describe("Global Store", () => {
 
             // Assert
             expect(isPartnerStateChanged).toBeTruthy();
+        });
+
+        it("Should attach eager multiple subscribers", () => {
+            // Arrange
+            let partnerAppName_1 = "SamplePartner-112";
+            let isPartnerStateChanged_1 = false;
+
+            let partnerAppName_2 = "SamplePartner-114";
+            let isPartnerStateChanged_2 = false;
+            
+            // Act
+            globalStore.SubscribeToPartnerState("Test", partnerAppName_1, (state) => {
+                isPartnerStateChanged_1 = true;
+            }, true);
+
+            globalStore.SubscribeToPartnerState("Test", partnerAppName_2, (state) => {
+                isPartnerStateChanged_2 = true;
+            }, true);
+
+            globalStore.CreateStore(partnerAppName_1, dummyPartnerReducer, [], ["Global"], false, false);
+            globalStore.CreateStore(partnerAppName_2, dummyPartnerReducer, [], ["Global"], false, false);
+            globalStore.DispatchGlobalAction("Test",
+                {
+                    type: "Global",
+                    payload: null
+                });
+
+
+            // Assert
+            expect(isPartnerStateChanged_1).toBeTruthy();
+            expect(isPartnerStateChanged_2).toBeTruthy();
         });
     });
 
