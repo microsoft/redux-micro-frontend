@@ -6,7 +6,7 @@ import { AbstractLogger as ILogger } from '../src/common/abstract.logger';
 describe("Global Store", () => {
     let mockLogger = {
         LogEvent: function (source, event, properties) { },
-        LogException: function(source, error, properties) { }
+        LogException: function (source, error, properties) { }
     } as ILogger;
 
     beforeEach(() => {
@@ -247,11 +247,11 @@ describe("Global Store", () => {
 
     describe("DispatchGlobalAction", () => {
         let dummyPartnerReducer: Reducer<any, any> = (state: string = "Default", action: IAction<any>) => {
-            switch(action.type) {
+            switch (action.type) {
                 case "Local": return "Local";
                 case "Global": return "Global";
             }
-                
+
         };
 
         it("Should dispatch globally registered action on a partner store", () => {
@@ -294,15 +294,15 @@ describe("Global Store", () => {
 
     describe("SubscribeToPartnerState", () => {
         let dummyPartnerReducer: Reducer<any, any> = (state: string = "Default", action: IAction<any>) => {
-            switch(action.type) {
+            switch (action.type) {
                 case "Local": return "Local";
                 case "Global": return "Global";
             }
-                
+
         };
 
         it("Should invoke callback when partner state changes", () => {
-             // Arrange
+            // Arrange
             let partnerAppName = "SamplePartner-40";
             let isPartnerStateChanged = false;
             globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
@@ -316,23 +316,108 @@ describe("Global Store", () => {
                     type: "Global",
                     payload: null
                 });
-            
+
 
             // Assert
             expect(isPartnerStateChanged).toBeTruthy();
+        });
+
+        it("Should allow registering to non-registered store in eager mode", () => {
+            // Arrange
+            let partnerAppName = "SamplePartner-100";
+
+            // Act
+            let exceptionThrown = false;
+            try {
+                globalStore.SubscribeToPartnerState("Test", partnerAppName, (state) => { }, true);
+            } catch {
+                exceptionThrown = true;
+            }
+
+            // Assert
+            expect(exceptionThrown).not.toBeTruthy();
+        });
+
+        it("Should throw exception when registering to non-registered store in non-eager mode", () => {
+            // Arrange
+            let partnerAppName = "SamplePartner-101";
+
+            // Act
+            let exceptionThrown = false;
+            try {
+                globalStore.SubscribeToPartnerState("Test", partnerAppName, (state) => { }, false);
+            } catch {
+                exceptionThrown = true;
+            }
+
+            // Assert
+            expect(exceptionThrown).toBeTruthy();
+        });
+
+        it("Should attach eager subscriber", () => {
+            // Arrange
+            let partnerAppName = "SamplePartner-102";
+            let isPartnerStateChanged = false;
+            
+            // Act
+            globalStore.SubscribeToPartnerState("Test", partnerAppName, (state) => {
+                isPartnerStateChanged = true;
+            }, true);
+
+            globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
+            globalStore.DispatchGlobalAction("Test",
+                {
+                    type: "Global",
+                    payload: null
+                });
+
+
+            // Assert
+            expect(isPartnerStateChanged).toBeTruthy();
+        });
+
+        it("Should attach eager multiple subscribers", () => {
+            // Arrange
+            let partnerAppName_1 = "SamplePartner-112";
+            let isPartnerStateChanged_1 = false;
+
+            let partnerAppName_2 = "SamplePartner-114";
+            let isPartnerStateChanged_2 = false;
+            
+            // Act
+            globalStore.SubscribeToPartnerState("Test", partnerAppName_1, (state) => {
+                isPartnerStateChanged_1 = true;
+            }, true);
+
+            globalStore.SubscribeToPartnerState("Test", partnerAppName_2, (state) => {
+                isPartnerStateChanged_2 = true;
+            }, true);
+
+            globalStore.CreateStore(partnerAppName_1, dummyPartnerReducer, [], ["Global"], false, false);
+            globalStore.CreateStore(partnerAppName_2, dummyPartnerReducer, [], ["Global"], false, false);
+            globalStore.DispatchGlobalAction("Test",
+                {
+                    type: "Global",
+                    payload: null
+                });
+
+
+            // Assert
+            expect(isPartnerStateChanged_1).toBeTruthy();
+            expect(isPartnerStateChanged_2).toBeTruthy();
         });
     });
 
     describe("SubscribeToGlobalState", () => {
         let dummyPartnerReducer: Reducer<any, any> = (state: string = "Default", action: IAction<any>) => {
-            switch(action.type) {
+            switch (action.type) {
                 case "Local": return "Local";
                 case "Global": return "Global";
             }
         };
 
         it("Should invoke callback when global state changes due to partner change", () => {
-             // Arrange
+            // Arrange
             let partnerAppName = "SamplePartner-40";
             let isGlobalStateChanged = false;
             globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
@@ -346,7 +431,7 @@ describe("Global Store", () => {
                     type: "Global",
                     payload: null
                 });
-            
+
 
             // Assert
             expect(isGlobalStateChanged).toBeTruthy();

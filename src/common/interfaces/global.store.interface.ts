@@ -18,6 +18,7 @@ export interface IGlobalStore {
     Subscribe(source: string, callback: (state: any) => void): () => void;
     SubscribeToPlatformState(source: string, callback: (state: any) => void): () => void;
     SubscribeToPartnerState(source: string, partner: string, callback: (state: any) => void): () => void;
+    SubscribeToPartnerState(source: string, partner: string, callback: (state: any) => void, eager: boolean): () => void;
     SubscribeToGlobalState(source: string, callback: (state: any) => void): () => void;
 
     SetLogger(logger: ILogger): void;

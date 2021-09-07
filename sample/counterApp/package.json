@@ -32,7 +32,6 @@
         "start-component": "webpack serve --config ./webpack.config.mf.js"
     },
     "private": false,
-    "dependencies": {},
     "devDependencies": {
         "@babel/cli": "^7.12.1",
         "@babel/core": "^7.12.3",
@@ -43,6 +42,7 @@
         "clean-webpack-plugin": "^3.0.0",
         "css-loader": "^5.0.0",
         "html-webpack-plugin": "^4.5.0",
+        "path-parse": "^1.0.7",
         "react": "^16.14.0",
         "react-dom": "^16.14.0",
         "redux-micro-frontend": "^1.1.1",

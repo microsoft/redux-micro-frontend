@@ -1,10 +1,10 @@
 import { IAction } from './actions/action.interface';
 import { ConsoleLogger } from './common/console.logger';
 import { ActionLogger } from './middlewares/action.logger';
+import { composeWithDevTools } from 'redux-devtools-extension';
 import { AbstractLogger as ILogger } from './common/abstract.logger';
 import { IGlobalStore } from './common/interfaces/global.store.interface';
 import { Store, Reducer, Middleware, createStore, applyMiddleware } from 'redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
 
 /**
  * Summary Global store for all Apps and container shell (Platform) in Micro-Frontend application.
@@ -19,12 +19,16 @@ export class GlobalStore implements IGlobalStore {
     private _stores: { [key: string]: Store };
     private _globalActions: { [key: string]: Array<string> };
     private _globalListeners: Array<(state: any) => void>;
+    private _eagerPartnerStoreSubscribers: { [key: string]: { [key: string]: (state) => void } }
+    private _eagerUnsubscribers: { [key: string]: { [key: string]: () => void } }
     private _actionLogger: ActionLogger = null;
 
     private constructor(private _logger: ILogger = null) {
         this._stores = {};
         this._globalActions = {};
         this._globalListeners = [];
+        this._eagerPartnerStoreSubscribers = {};
+        this._eagerUnsubscribers = {};
         this._actionLogger = new ActionLogger(_logger);
     }
 
@@ -34,7 +38,7 @@ export class GlobalStore implements IGlobalStore {
      * @param {ILogger} logger Logger service.
      */
     public static Get(debugMode: boolean = false, logger: ILogger = null): IGlobalStore {
-        if(debugMode) {
+        if (debugMode) {
             this.DebugMode = debugMode;
         }
         if (debugMode && (logger === undefined || logger === null)) {
@@ -66,7 +70,7 @@ export class GlobalStore implements IGlobalStore {
         if (existingStore === null || existingStore === undefined || shouldReplaceStore) {
             if (middlewares === undefined || middlewares === null)
                 middlewares = [];
-            let appStore = createStore(appReducer, GlobalStore.DebugMode ? composeWithDevTools( applyMiddleware(...middlewares)) : applyMiddleware(...middlewares));
+            let appStore = createStore(appReducer, GlobalStore.DebugMode ? composeWithDevTools(applyMiddleware(...middlewares)) : applyMiddleware(...middlewares));
             this.RegisterStore(appName, appStore, globalActions, shouldReplaceStore);
             return appStore;
         }
@@ -96,6 +100,7 @@ export class GlobalStore implements IGlobalStore {
         this._stores[appName] = store;
         store.subscribe(this.InvokeGlobalListeners.bind(this));
         this.RegisterGlobalActions(appName, globalActions);
+        this.RegisterEagerSubscriptions(appName);
         this.LogRegistration(appName, (existingStore !== undefined && existingStore !== null));
     }
 
@@ -265,15 +270,29 @@ export class GlobalStore implements IGlobalStore {
      * @param {string} source Name of the application subscribing to the state changes.
      * @param {string} partner Name of the Partner application to whose store is getting subscribed to.
      * @param {(state: any) => void} callback Callback method to be called for every partner's state change.
+     * @param {boolean} eager Allows subscription to store that's yet to registered
      * 
      * @throws Error when the partner is yet to be registered/loaded or partner doesn't exist.
      * 
      * @returns {() => void} Unsubscribe method. Call this method to unsubscribe to the changes.
      */
-    SubscribeToPartnerState(source: string, partner: string, callback: (state: any) => void): () => void {
+    SubscribeToPartnerState(source: string, partner: string, callback: (state: any) => void, eager: boolean = true): () => void {
         let partnerStore = this.GetPartnerStore(partner);
         if (partnerStore === undefined || partnerStore === null) {
-            throw new Error(`ERROR: ${source} is trying to subscribe to partner ${partner}. Either ${partner} doesn't exist or hasn't been loaded yet`);
+            if (!eager) {
+                throw new Error(`ERROR: ${source} is trying to subscribe to partner ${partner}. Either ${partner} doesn't exist or hasn't been loaded yet`);
+            }
+            if (this._eagerPartnerStoreSubscribers[partner]) {
+                this._eagerPartnerStoreSubscribers[partner].source = callback;
+            } else {
+                this._eagerPartnerStoreSubscribers[partner] = {
+                    source: callback
+                }
+            }
+
+            return () => {
+                this.UnsubscribeEagerSubscription(source, partner);
+            }
         }
         return partnerStore.subscribe(() => callback(partnerStore.getState()));
     }
@@ -295,12 +314,44 @@ export class GlobalStore implements IGlobalStore {
         }
     }
 
+    UnsubscribeEagerSubscription(source: string, partnerName: string) {
+        if (!partnerName || !source)
+            return;
+
+        if (!this._eagerUnsubscribers[partnerName])
+            return;
+
+        let unsubscriber = this._eagerUnsubscribers[partnerName].source;
+        if (unsubscriber)
+            unsubscriber();
+    }
+
     SetLogger(logger: ILogger) {
         if (this._logger === undefined || this._logger === null)
             this._logger = logger;
         else
             this._logger.SetNextLogger(logger);
         this._actionLogger.SetLogger(logger);
+    }
+
+    private RegisterEagerSubscriptions(appName: string) {
+        let eagerCallbacksRegistrations = this._eagerPartnerStoreSubscribers[appName];
+        if (eagerCallbacksRegistrations === undefined || eagerCallbacksRegistrations === undefined)
+            return;
+        let registeredApps = Object.keys(eagerCallbacksRegistrations);
+        registeredApps.forEach(sourceApp => {
+            let callback = eagerCallbacksRegistrations[sourceApp];
+            if (callback) {
+                let unregistrationCallback = this.SubscribeToPartnerState(sourceApp, appName, callback, false);
+                if (this._eagerPartnerStoreSubscribers[appName]) {
+                    this._eagerPartnerStoreSubscribers[appName].sourceApp = unregistrationCallback;
+                } else {
+                    this._eagerPartnerStoreSubscribers[appName] = {
+                        sourceApp: unregistrationCallback
+                    };
+                }
+            }
+        });
     }
 
     private InvokeGlobalListeners(): void {
@@ -325,9 +376,9 @@ export class GlobalStore implements IGlobalStore {
 
     private IsActionRegisteredAsGlobal(appName: string, action: IAction<any>): boolean {
         let registeredGlobalActions = this._globalActions[appName];
-            if (registeredGlobalActions === undefined || registeredGlobalActions === null) {
-                return false;
-            }
+        if (registeredGlobalActions === undefined || registeredGlobalActions === null) {
+            return false;
+        }
         return registeredGlobalActions.some(registeredAction => registeredAction === action.type || registeredAction === GlobalStore.AllowAll);
     }
 
