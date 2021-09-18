@@ -30,8 +30,9 @@ A concept of `Global Store` is introduced which is a virtual amalgamation of mul
 
 Each Micro Frontend would have the capability to have its own `Redux Store`. Each app would create and register their `Redux Store` with the `Global Store`. The `Global Store` then uses these individual stores to project a Global State which is a combination of the state from all the other Stores. All the Micro Frontends would have access to the Global Store and would be able to see the state from the other Micro Frontends but won't be able to modify them. Actions dispatched by an app remains confined within the store registered by the app and is not dispatched to the other stores, thereby providing componentization and isolation.
 ### Read more
-[State Management Basics](https://www.devcompost.com/post/state-management-for-front-end-applications-part-i-what-and-why)
-[State Management in Micro Frontends](https://www.devcompost.com/post/state-management-ii-world-of-micro-frontends) 
+- [State Management Basics](https://www.devcompost.com/post/state-management-for-front-end-applications-part-i-what-and-why)
+
+- [State Management in Micro Frontends](https://www.devcompost.com/post/state-management-ii-world-of-micro-frontends) 
 
 
 ### Global Actions
