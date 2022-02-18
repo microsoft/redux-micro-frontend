@@ -16,13 +16,13 @@
 
 ## Overview
 
-This library can be used for using Redux in a Micro-Frontend based architecture. Micro Frontends is an architectural pattern for breaking up a monolith Frontend application into manageable, decoupled and smaller applications. Each application is a self-contained and isolated unit. Generally, a common shell/platform application is used to host these small units to provide a common experience for the end-users.
+This library can be used for using Redux in a Micro Frontend based architecture. Micro Frontends is an architectural pattern for breaking up a monolith Frontend application into manageable, decoupled and smaller applications. Each application is a self-contained and isolated unit. Generally, a common shell/platform application is used to host these small units to provide a common experience for the end-users.
 
-`Redux` is one of the most popular libraries for predictable state management. However, the general practice in using Redux is to have a single store, thereby having a single state object. This approach would mean that all the Micro Frontends would have a shared state. This is a violation of the Micro-Frontend based architecture since each App is supposed to be a self-contained unit having its store.
+`Redux` is one of the most popular libraries for predictable state management. However, the general practice in using Redux is to have a single store, thereby having a single state object. This approach would mean that all the Micro Frontends would have a shared state. This is a violation of the Micro Frontend based architecture since each App is supposed to be a self-contained unit having its store.
 
-To provide a level of isolation some developers use `combineReducer()` to write a separate reducer for each Micro Frontend and then combine them into one big reducer. Although it would solve some problems this would still imply that a single state object is shared across all the apps. In the absence of sufficient precautions, apps might accidentally override other others state.
+To provide a level of isolation some developers use `combineReducer()` to write a separate reducer for each Micro Frontend and then combine them into one big reducer. Although it would solve some problems this would still imply that a single state object is shared across all the apps. In the absence of sufficient precautions, apps might accidentally override each other's state.
 
-In a Micro-Frontend architecture, an individual application should not be able to modify the state of other apps. However, they should be able to see the state of other apps. Along the same line for enabling cross-application communication, they should also be able to send events/actions to other Stores and also get notified of changes in other apps' state. This library aims to attain that sweet spot between providing isolation and cross-application communication.
+In a Micro Frontend architecture, an individual application should not be able to modify the state of other apps. However, they should be able to see the state of other apps. Along the same line for enabling cross-application communication, they should also be able to send events/actions to other Stores and also get notified of changes in other apps' state. This library aims to attain that sweet spot between providing isolation and cross-application communication.
 
 
 ## Concept
@@ -36,7 +36,7 @@ Each Micro Frontend would have the capability to have its own `Redux Store`. Eac
 
 
 ### Global Actions
-A concept of `Global Action` is available which allows other apps to dispatch actions to stores registered by other micro frontends. Each micro frontend has the capability to register a set of global actions along with the store. These set of global actions can be dispatched in this micro frontend's store by other micro frontends. This enables cross-application communication.
+A concept of `Global Action` is available which allows other apps to dispatch actions to stores registered by other Micro Frontends. Each Micro Frontend has the capability to register a set of global actions along with the store. These set of global actions can be dispatched in this Micro Frontend's store by other Micro Frontends. This enables cross-application communication.
 ![Global Store](https://github.com/microsoft/redux-micro-frontend/blob/main/assets/Global_Store_Dispatch.png)
 
 ### Cross-state callbacks
