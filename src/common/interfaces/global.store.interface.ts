@@ -21,5 +21,8 @@ export interface IGlobalStore {
     SubscribeToPartnerState(source: string, partner: string, callback: (state: any) => void, eager: boolean): () => void;
     SubscribeToGlobalState(source: string, callback: (state: any) => void): () => void;
 
+    ExposeDerivedState(source: string, api: Record<string, any>, mergeApi?: boolean): void;
+    SelectPartnerDerivedState(partner: string, interestedDerivedState: string, defaultReturn?: any): any;
+
     SetLogger(logger: ILogger): void;
 };
