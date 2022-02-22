@@ -480,4 +480,169 @@ describe("Global Store", () => {
             expect(isGlobalStateChanged).toBe(true);
         });
     });
+
+    describe("AddSelectors", () => {
+        let dummyPartnerReducer: Reducer<any, any> = (state: string = "Default", action: IAction<any>) => {
+            switch (action.type) {
+                case "Local": return "Local";
+                case "Global": return "Global";
+            }
+        };
+
+        it("Should successfully expose derived state API", () => {
+            let partnerAppName = "SamplePartner-2022";
+            const partnerStore = globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
+
+            // Arrange
+            globalStore.AddSelectors(partnerAppName, {
+                selectStateUpperCased: () => {
+                    const state = partnerStore.getState();
+                    return state.toUpperCase()
+                },
+                selectStateLowerCased: () => {
+                    const state = partnerStore.getState();
+                    return state.toLowerCase()
+                }
+            });
+
+            // Assert
+            const api = (<any>globalStore)._selectors[partnerAppName];
+            expect(api.selectStateUpperCased).toBeDefined();
+            expect(api.selectStateLowerCased).toBeDefined();
+        });
+
+        it("Should successfully merge derived state API", () => {
+            let partnerAppName = "SamplePartner-2023";
+            const partnerStore = globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
+
+            // Arrange
+            globalStore.AddSelectors(partnerAppName, {
+                selectStateUpperCased: () => {
+                    const state = partnerStore.getState();
+                    return state.toUpperCase()
+                },
+            });
+
+            globalStore.AddSelectors(partnerAppName, {
+                selectStateLowerCased: () => {
+                    const state = partnerStore.getState();
+                    return state.toLowerCase()
+                }
+            }, true);
+
+            // Assert
+            const api = (<any>globalStore)._selectors[partnerAppName];
+            expect(api.selectStateUpperCased).toBeDefined();
+            expect(api.selectStateLowerCased).toBeDefined();
+        });
+
+        it("Should not merge derived state API", () => {
+            let partnerAppName = "SamplePartner-2024";
+            const partnerStore = globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
+
+            // Arrange
+            globalStore.AddSelectors(partnerAppName, {
+                selectStateUpperCased: () => {
+                    const state = partnerStore.getState();
+                    return state.toUpperCase()
+                },
+            });
+
+            globalStore.AddSelectors(partnerAppName, {
+                selectStateLowerCased: () => {
+                    const state = partnerStore.getState();
+                    return state.toLowerCase()
+                }
+            });
+
+            // Assert
+            const api = (<any>globalStore)._selectors[partnerAppName];
+            expect(api.selectStateUpperCased).toBeDefined();
+            expect(api.selectStateLowerCased).toBeUndefined();
+        })
+    })
+
+    describe("SelectPartnerState", () => {
+        let dummyPartnerReducer: Reducer<any, any> = (state: string = "Default", action: IAction<any>) => {
+            switch (action.type) {
+                case "Local": return "Local";
+                case "Global": return "Global";
+                default:
+                    return state;
+            }
+        };
+
+        it("Should be able to request a piece of derived state with valid key", () => {
+            // Arrange
+            let partnerAppName = "SamplePartner-2012";
+            const partnerStore = globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
+
+            globalStore.AddSelectors(partnerAppName, {
+                selectStateUpperCased: () => {
+                    const state = partnerStore.getState();
+                    return state.toUpperCase()
+                },
+                selectStateLowerCased: () => {
+                    const state = partnerStore.getState();
+                    return state.toLowerCase()
+                }
+            });
+
+            // Act
+            const partnerStateComputedUpperCase = globalStore.SelectPartnerState(partnerAppName, "selectStateUpperCased");
+            expect(partnerStateComputedUpperCase).toEqual("DEFAULT");
+            const partnerStateComputedLowerCase = globalStore.SelectPartnerState(partnerAppName, "selectStateLowerCased");
+            expect(partnerStateComputedLowerCase).toEqual("default");
+        });
+
+        it("Should be return undefined if derived state key is not defined", () => {
+            // Arrange
+            let partnerAppName = "SamplePartner-2013";
+            const partnerStore = globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
+
+            globalStore.AddSelectors(partnerAppName, {
+                selectStateUpperCased: () => {
+                    const state = partnerStore.getState();
+                    return state.toUpperCase()
+                },
+            });
+
+            // Act
+            const partnerStateComputedLowerCase = globalStore.SelectPartnerState(partnerAppName, "selectStateLowerCased");
+            expect(partnerStateComputedLowerCase).toEqual(undefined);
+        });
+
+        it("Should be return default value if derived state key is not defined", () => {
+            // Arrange
+            let partnerAppName = "SamplePartner-2013";
+            const partnerStore = globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
+
+            globalStore.AddSelectors(partnerAppName, {
+                selectStateUpperCased: () => {
+                    const state = partnerStore.getState();
+                    return state.toUpperCase()
+                },
+            });
+
+            // Act
+            const partnerStateComputedLowerCase = globalStore.SelectPartnerState(partnerAppName, "selectStateLowerCased", "I am a default value");
+            expect(partnerStateComputedLowerCase).toEqual("I am a default value");
+        });
+
+        it("Should throw error if partner has not exposed any derived", () => {
+            // Arrange
+            let partnerAppName = "SamplePartner-2014";
+            let exceptionThrown = false;
+            globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
+
+            try {
+                globalStore.SelectPartnerState(partnerAppName, "selectStateLowerCased");
+            } catch {
+                exceptionThrown = true;
+            }
+
+            // Assert
+            expect(exceptionThrown).toBeTruthy();
+        });
+    });
 });
