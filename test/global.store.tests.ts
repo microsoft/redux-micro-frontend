@@ -481,7 +481,7 @@ describe("Global Store", () => {
         });
     });
 
-    describe("ExposeDerivedState", () => {
+    describe("AddSelectors", () => {
         let dummyPartnerReducer: Reducer<any, any> = (state: string = "Default", action: IAction<any>) => {
             switch (action.type) {
                 case "Local": return "Local";
@@ -494,7 +494,7 @@ describe("Global Store", () => {
             const partnerStore = globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
 
             // Arrange
-            globalStore.ExposeDerivedState(partnerAppName, {
+            globalStore.AddSelectors(partnerAppName, {
                 selectStateUpperCased: () => {
                     const state = partnerStore.getState();
                     return state.toUpperCase()
@@ -506,7 +506,7 @@ describe("Global Store", () => {
             });
 
             // Assert
-            const api = (<any>globalStore)._exposedDerivedState[partnerAppName];
+            const api = (<any>globalStore)._selectors[partnerAppName];
             expect(api.selectStateUpperCased).toBeDefined();
             expect(api.selectStateLowerCased).toBeDefined();
         });
@@ -516,14 +516,14 @@ describe("Global Store", () => {
             const partnerStore = globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
 
             // Arrange
-            globalStore.ExposeDerivedState(partnerAppName, {
+            globalStore.AddSelectors(partnerAppName, {
                 selectStateUpperCased: () => {
                     const state = partnerStore.getState();
                     return state.toUpperCase()
                 },
             });
 
-            globalStore.ExposeDerivedState(partnerAppName, {
+            globalStore.AddSelectors(partnerAppName, {
                 selectStateLowerCased: () => {
                     const state = partnerStore.getState();
                     return state.toLowerCase()
@@ -531,7 +531,7 @@ describe("Global Store", () => {
             }, true);
 
             // Assert
-            const api = (<any>globalStore)._exposedDerivedState[partnerAppName];
+            const api = (<any>globalStore)._selectors[partnerAppName];
             expect(api.selectStateUpperCased).toBeDefined();
             expect(api.selectStateLowerCased).toBeDefined();
         });
@@ -541,14 +541,14 @@ describe("Global Store", () => {
             const partnerStore = globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
 
             // Arrange
-            globalStore.ExposeDerivedState(partnerAppName, {
+            globalStore.AddSelectors(partnerAppName, {
                 selectStateUpperCased: () => {
                     const state = partnerStore.getState();
                     return state.toUpperCase()
                 },
             });
 
-            globalStore.ExposeDerivedState(partnerAppName, {
+            globalStore.AddSelectors(partnerAppName, {
                 selectStateLowerCased: () => {
                     const state = partnerStore.getState();
                     return state.toLowerCase()
@@ -556,13 +556,13 @@ describe("Global Store", () => {
             });
 
             // Assert
-            const api = (<any>globalStore)._exposedDerivedState[partnerAppName];
+            const api = (<any>globalStore)._selectors[partnerAppName];
             expect(api.selectStateUpperCased).toBeDefined();
             expect(api.selectStateLowerCased).toBeUndefined();
         })
     })
 
-    describe("SelectPartnerDerivedState", () => {
+    describe("SelectPartnerState", () => {
         let dummyPartnerReducer: Reducer<any, any> = (state: string = "Default", action: IAction<any>) => {
             switch (action.type) {
                 case "Local": return "Local";
@@ -577,7 +577,7 @@ describe("Global Store", () => {
             let partnerAppName = "SamplePartner-2012";
             const partnerStore = globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
 
-            globalStore.ExposeDerivedState(partnerAppName, {
+            globalStore.AddSelectors(partnerAppName, {
                 selectStateUpperCased: () => {
                     const state = partnerStore.getState();
                     return state.toUpperCase()
@@ -589,9 +589,9 @@ describe("Global Store", () => {
             });
 
             // Act
-            const partnerStateComputedUpperCase = globalStore.SelectPartnerDerivedState(partnerAppName, "selectStateUpperCased");
+            const partnerStateComputedUpperCase = globalStore.SelectPartnerState(partnerAppName, "selectStateUpperCased");
             expect(partnerStateComputedUpperCase).toEqual("DEFAULT");
-            const partnerStateComputedLowerCase = globalStore.SelectPartnerDerivedState(partnerAppName, "selectStateLowerCased");
+            const partnerStateComputedLowerCase = globalStore.SelectPartnerState(partnerAppName, "selectStateLowerCased");
             expect(partnerStateComputedLowerCase).toEqual("default");
         });
 
@@ -600,7 +600,7 @@ describe("Global Store", () => {
             let partnerAppName = "SamplePartner-2013";
             const partnerStore = globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
 
-            globalStore.ExposeDerivedState(partnerAppName, {
+            globalStore.AddSelectors(partnerAppName, {
                 selectStateUpperCased: () => {
                     const state = partnerStore.getState();
                     return state.toUpperCase()
@@ -608,7 +608,7 @@ describe("Global Store", () => {
             });
 
             // Act
-            const partnerStateComputedLowerCase = globalStore.SelectPartnerDerivedState(partnerAppName, "selectStateLowerCased");
+            const partnerStateComputedLowerCase = globalStore.SelectPartnerState(partnerAppName, "selectStateLowerCased");
             expect(partnerStateComputedLowerCase).toEqual(undefined);
         });
 
@@ -617,7 +617,7 @@ describe("Global Store", () => {
             let partnerAppName = "SamplePartner-2013";
             const partnerStore = globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
 
-            globalStore.ExposeDerivedState(partnerAppName, {
+            globalStore.AddSelectors(partnerAppName, {
                 selectStateUpperCased: () => {
                     const state = partnerStore.getState();
                     return state.toUpperCase()
@@ -625,7 +625,7 @@ describe("Global Store", () => {
             });
 
             // Act
-            const partnerStateComputedLowerCase = globalStore.SelectPartnerDerivedState(partnerAppName, "selectStateLowerCased", "I am a default value");
+            const partnerStateComputedLowerCase = globalStore.SelectPartnerState(partnerAppName, "selectStateLowerCased", "I am a default value");
             expect(partnerStateComputedLowerCase).toEqual("I am a default value");
         });
 
@@ -636,7 +636,7 @@ describe("Global Store", () => {
             globalStore.CreateStore(partnerAppName, dummyPartnerReducer, [], ["Global"], false, false);
 
             try {
-                globalStore.SelectPartnerDerivedState(partnerAppName, "selectStateLowerCased");
+                globalStore.SelectPartnerState(partnerAppName, "selectStateLowerCased");
             } catch {
                 exceptionThrown = true;
             }

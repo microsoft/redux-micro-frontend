@@ -22,7 +22,7 @@ export class GlobalStore implements IGlobalStore {
     private _eagerPartnerStoreSubscribers: { [key: string]: { [key: string]: (state) => void } }
     private _eagerUnsubscribers: { [key: string]: { [key: string]: () => void } }
     private _actionLogger: ActionLogger = null;
-    private _exposedDerivedState: { [key: string]: any };
+    private _selectors: { [key: string]: any };
 
     private constructor(private _logger: ILogger = null) {
         this._stores = {};
@@ -31,7 +31,7 @@ export class GlobalStore implements IGlobalStore {
         this._eagerPartnerStoreSubscribers = {};
         this._eagerUnsubscribers = {};
         this._actionLogger = new ActionLogger(_logger);
-        this._exposedDerivedState = {};
+        this._selectors = {};
     }
 
     /**
@@ -337,45 +337,45 @@ export class GlobalStore implements IGlobalStore {
     }
 
     /**
-     * Summary: Expose an API collection from a Partner-level that other partners can later consume. This allows partners to derive data without forcing partners to know the state structure.
+     * Summary: Expose a collection of Selecotrs from a Partner-level that other partners can later consume. This allows partners to derive data without forcing partners to know the state structure.
      * 
      * @access public
      * 
      * @param {string} source Name of the application exposing an derived state API
-     * @param {Record<string, any>} api The collection of APIs of derived state selectors.
-     * @param {boolean} mergeApi If the source application already exposed an API set, merge the new API being passed in.
+     * @param {Record<string, any>} selectors The collection of APIs of derived state selectors.
+     * @param {boolean} mergeSelectors If the source application already exposed an API set, merge the new API being passed in.
      * 
      */
-    ExposeDerivedState(source: string, api: Record<string, any>, mergeApi = false) {
-        if (this._exposedDerivedState[source] == undefined) {
-            this._exposedDerivedState[source] = api;
+     AddSelectors(source: string, selectors: Record<string, any>, mergeSelectors = false) {
+        if (this._selectors[source] == undefined) {
+            this._selectors[source] = selectors;
         }
 
-        if (this._exposedDerivedState[source] != undefined && mergeApi) {
-            this._exposedDerivedState[source] = Object.assign({}, this._exposedDerivedState[source], api);
+        if (this._selectors[source] != undefined && mergeSelectors) {
+            this._selectors[source] = Object.assign({}, this._selectors[source], selectors);
         }
     }
 
     /**
-     * Summary: Select derived state from a partner app using the API name
+     * Summary: Select derived state from a partner app using the selector name
      * 
      * @access public
      * 
      * @param {string} partner Name of the partner application to select derived data from
-     * @param {string} interestedDerivedState The name of the API to select
+     * @param {string} selector The name of the API to select
      * @param {any} defaultReturn If the partner app does not have that API exposed, return this default value instead of undefined.
      * 
      */
-    SelectPartnerDerivedState(partner: string, interestedDerivedState: string, defaultReturn?: any) {
-        if (this._exposedDerivedState[partner] == undefined) {
-            throw new Error(`ERROR: ${partner} not exposed any derived state.`);
+     SelectPartnerState(partner: string, selector: string, defaultReturn?: any) {
+        if (this._selectors[partner] == undefined) {
+            throw new Error(`ERROR: ${partner} not exposed any selectors.`);
         }
-        if (this._exposedDerivedState[partner][interestedDerivedState] == undefined) {
-            console.warn(`${partner} has not exposed derived state with key: ${interestedDerivedState}`);
+        if (this._selectors[partner][selector] == undefined) {
+            console.warn(`${partner} has not exposed a selector with the name: ${selector}`);
             return defaultReturn;
         }
 
-        return this._exposedDerivedState[partner][interestedDerivedState]();
+        return this._selectors[partner][selector]();
     }
 
     private RegisterEagerSubscriptions(appName: string) {
