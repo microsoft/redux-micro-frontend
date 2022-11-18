@@ -1,5 +1,4 @@
-trigger:
-- main
+trigger: none
 
 jobs:
   - job: BuildLibrary
