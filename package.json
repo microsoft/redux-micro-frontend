@@ -50,6 +50,7 @@
     },
     "devDependencies": {
         "@types/jasmine": "^3.5.14",
+        "@types/node": "14.18.63",
         "cpr": "^3.0.1",
         "jasmine": "^3.6.2",
         "karma": "^6.3.4",
