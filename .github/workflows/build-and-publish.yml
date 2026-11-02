@@ -3,11 +3,16 @@ name: Build-and-Publish
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
+        with:
+          persist-credentials: false
       - name: Install Dependencies
         run: npm install
       - name: Build
